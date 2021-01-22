@@ -61,6 +61,5 @@ while True:
             newfile = open("savefiles/"+current_date+".json","wb")
             newfile.write(json.dumps([["unplugged",int(time.time())]]).encode())
             newfile.close()
-        if pygame.midi.get_init():
-            pygame.midi.quit()
+        pygame.midi.quit()
         time.sleep(5)
