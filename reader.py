@@ -37,6 +37,7 @@ while True:
                 reset_pushover=time.time()
             if reset_pushover+5 < time.time():
                 print("Reseting -",time.time())
+                current_date = datetime.datetime.now().strftime("%Y-%m-%d")
                 if current_date+".json" in os.listdir("savefiles"):
                     oldlog = json.loads(open("savefiles/"+current_date+".json","rb").read().decode())
                     newfile = open("savefiles/"+current_date+".json","wb")
@@ -50,6 +51,16 @@ while True:
         pygame.midi.quit()
     except Exception as e:
         print(e,"-",time.time())
+        current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        if current_date+".json" in os.listdir("savefiles"):
+            oldlog = json.loads(open("savefiles/"+current_date+".json","rb").read().decode())
+            newfile = open("savefiles/"+current_date+".json","wb")
+            newfile.write(json.dumps(oldlog+[["unplugged",int(time.time())]]).encode())
+            newfile.close()
+        else:
+            newfile = open("savefiles/"+current_date+".json","wb")
+            newfile.write(json.dumps([["unplugged",int(time.time())]]).encode())
+            newfile.close()
         if pygame.midi.get_init():
             pygame.midi.quit()
         time.sleep(5)
