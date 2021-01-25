@@ -1,4 +1,5 @@
 import json
+import pickle
 import pygame.midi
 import time
 import os
@@ -22,44 +23,33 @@ while True:
                 wait_end=time.time()+2
                 current_date = datetime.datetime.now().strftime("%Y-%m-%d")
                 if current_date+".json" in os.listdir("savefiles"):
-                    oldlog = json.loads(open("savefiles/"+current_date+".json","rb").read().decode())
-                    newfile = open("savefiles/"+current_date+".json","wb")
-                    newfile.write(json.dumps(oldlog+devicedata).encode())
-                    newfile.close()
+                    oldlog = pickle.load(open("savefiles/"+current_date+".pickle","rb"))
+                    pickle.dump(oldlog+devicedata,open("savefiles/"+current_date+".json","wb"))
                 else:
-                    newfile = open("savefiles/"+current_date+".json","wb")
-                    newfile.write(json.dumps(devicedata).encode())
-                    newfile.close()
+                    pickle.dump(oldlog+devicedata,open("savefiles/"+current_date+".json","wb+"))
             midi_device_latest_output=mididevice.read(100)
             if len(midi_device_latest_output)>0:
-                devicedata.append([device_init_time,midi_device_latest_output])
+                for msg in port.iter_pending():
+                    devicedata.append([time.time(),msg])
             if len(midi_device_latest_output) > 0:
                 reset_pushover=time.time()
             if reset_pushover+5 < time.time():
                 print("Reseting -",time.time())
                 current_date = datetime.datetime.now().strftime("%Y-%m-%d")
                 if current_date+".json" in os.listdir("savefiles"):
-                    oldlog = json.loads(open("savefiles/"+current_date+".json","rb").read().decode())
-                    newfile = open("savefiles/"+current_date+".json","wb")
-                    newfile.write(json.dumps(oldlog+devicedata).encode())
-                    newfile.close()
+                    oldlog = pickle.load(open("savefiles/"+current_date+".pickle","rb"))
+                    pickle.dump(oldlog+devicedata,open("savefiles/"+current_date+".json","wb"))
                 else:
-                    newfile = open("savefiles/"+current_date+".json","wb")
-                    newfile.write(json.dumps(devicedata).encode())
-                    newfile.close()
+                    pickle.dump(oldlog+devicedata,open("savefiles/"+current_date+".json","wb+"))
                 break
         pygame.midi.quit()
     except Exception as e:
         print(e,"-",time.time())
         current_date = datetime.datetime.now().strftime("%Y-%m-%d")
         if current_date+".json" in os.listdir("savefiles"):
-            oldlog = json.loads(open("savefiles/"+current_date+".json","rb").read().decode())
-            newfile = open("savefiles/"+current_date+".json","wb")
-            newfile.write(json.dumps(oldlog+[["unplugged",int(time.time())]]).encode())
-            newfile.close()
+            oldlog = pickle.load(open("savefiles/"+current_date+".pickle","rb"))
+            pickle.dump(oldlog+devicedata,open("savefiles/"+current_date+".json","wb"))
         else:
-            newfile = open("savefiles/"+current_date+".json","wb")
-            newfile.write(json.dumps([["unplugged",int(time.time())]]).encode())
-            newfile.close()
+            pickle.dump(oldlog+devicedata,open("savefiles/"+current_date+".json","wb+"))
         pygame.midi.quit()
         time.sleep(5)
