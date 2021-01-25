@@ -3,10 +3,11 @@
         <title>Midi Recorder</title>
     </head>
     <body>
-        <h1>Days Saved</h1>
+        <h1>{{ session }} on {{ day[:-5] }}</h1>
+		<!--{{ notes }}-->
 		<ul>
-			{% for day in days: %}
-				<li><a href="/viewday?day={{ day }}">{{ day[:-5] }}</a></li>
+			{% for note in notes: %}
+				<li>{{ note }}</li>
 			{% endfor %}
 		<ul>
     </body>
